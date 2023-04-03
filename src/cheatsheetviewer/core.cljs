@@ -4,30 +4,40 @@
       [reagent.dom :as d]
       [clojure.edn :as edn]
       [cheatsheetviewer.list :as lister]
+      [cheatsheetviewer.workbench :as wb]
       ))
 
 ; Don't really need tags. Not sure when anything from clojure would cross over to scala for example and be relevent.
 (def test-data
   [
-   {:title "Markdown"
-    :items [{:title "link"
-             :items [{:content "[example](https://www.example.com)"
+   {;:id "item-0"
+    :title "Markdown"
+    :items [{;:id "item-0-0"
+             :title "link"
+             :items [{;:id "item-0-0-0"
+                      :content "Put them in the form of `[CONTENT](URL)`"
                       :examples [{:content "[title](https://www.example.com)"}]
                       }
                      ]
              }
-            {:title "heading"
-             :items [{:content "To create a heading use #"
+            {;:id "item-0-1"
+             :title "heading"
+             :items [{;:id "item-0-1-0"
+                      :content "To create a heading use #"
                       }
                      ]
              }
             ]
     }
-   {:title "command line"
-    :items [{:title "`find`"
-             :items [{:content "Manual: [https://www.gnu.org/software/findutils/manual/find.html](https://www.gnu.org/software/findutils/manual/find.html)"
+   {;:id "item-1"
+    :title "command line"
+    :items [{;:id "item-1-0"
+             :title "`find`"
+             :items [{;:id "item-1-0-0"
+                      :content "Manual: [https://www.gnu.org/software/findutils/manual/find.html](https://www.gnu.org/software/findutils/manual/find.html)"
                       }
-                     {:content "```find <OPTIONS> <PATH>```"}
+                     {;:id "item-1-0-1"
+                      :content "```find <OPTIONS> <PATH>```"}
                      {:content "Options
                                * -type
                                * -name"}
@@ -81,7 +91,7 @@
         ]
     (do
       ;(println "id items" items)
-    (map-indexed assign-id items)
+    (vec (map-indexed assign-id items))
     )))
 
 
@@ -89,33 +99,33 @@
 
 (println "test-data-id" test-data-id)
 
-(def test-data-2
-  [{:content "command line"
-    :children [{:content "`find`"
-                :children [{:content "Manual: [https://www.gnu.org/software/findutils/manual/find.html](https://www.gnu.org/software/findutils/manual/find.html)"
-                            }
-                           {:content "```find <OPTIONS> <PATH>```"}
-                           {:content "Options"
-                            :children [{:content "-type"} {:content "-name"}]
-                            }
-                           ]
-                }
-               ]
-    }
-   {:content "Markdown"
-    :children [{:content "link"
-                :children [{:content "[]()"
-                            :children [{:content "examples"
-                                        :children [{:content "[title](https://www.example.com)"}
-                                                   ]
-                                        }]
-                            }
-                           ]
-                }
-               ]
-    }
-   ]
-  )
+;(def test-data-2
+;  [{:content "command line"
+;    :children [{:content "`find`"
+;                :children [{:content "Manual: [https://www.gnu.org/software/findutils/manual/find.html](https://www.gnu.org/software/findutils/manual/find.html)"
+;                            }
+;                           {:content "```find <OPTIONS> <PATH>```"}
+;                           {:content "Options"
+;                            :children [{:content "-type"} {:content "-name"}]
+;                            }
+;                           ]
+;                }
+;               ]
+;    }
+;   {:content "Markdown"
+;    :children [{:content "link"
+;                :children [{:content "\\[\\]()"
+;                            :children [{:content "examples"
+;                                        :children [{:content "[title](https://www.example.com)"}
+;                                                   ]
+;                                        }]
+;                            }
+;                           ]
+;                }
+;               ]
+;    }
+;   ]
+;  )
 
 
 (defn get-sheets []
@@ -125,14 +135,27 @@
     (edn/read-string sheet-string)
   ))
 
+(defn everything [sheets]
+  (let [current (r/atom (first sheets))
+        set-current (fn [sheet] (reset! current sheet))
+        display-workbench (r/atom false)
+        [workbench-sidebar, workbench-display, add-to-workbench] (wb/workbench-component-and-setter display-workbench)
+        ]
+    (fn []
+      (do
+        [:div {:id "everything"}
+         [lister/left-sidebar set-current @current sheets]
+         [:main (if @display-workbench workbench-display [lister/sheet-display sheets add-to-workbench @current])]
+         [workbench-sidebar]
+         ]
+        ))))
+
 ;; -------------------------
 ;; Views
 
 (defn home-page []
-  [:div
-   [:p "Cheat sheets"]
-   [lister/everything test-data-id]
-   ])
+   [everything test-data-id]
+   )
 
 ;; -------------------------
 ;; Initialize app
