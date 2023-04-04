@@ -20,3 +20,14 @@
 (defn map-component [component items]
   (vec (map (fn [item] [component item]) items))
   )
+
+(defn split-id [id]
+  (as-> id X
+    (clojure.string/split X #"-")
+    (rest X)
+    (map js/parseInt X)
+    (vec X)))
+
+(defn dissoc-in [assoc-val path]
+  (update-in assoc-val (butlast path) dissoc (last path))
+  )

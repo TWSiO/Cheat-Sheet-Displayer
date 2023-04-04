@@ -17,8 +17,7 @@
 
 ; Would this be much easier if I just made it a generic "tree"? Would it have been worth the overhead?
 (defn add-to-workbench [current-workbench sheets id-of-new]
-  (let [split-id (vec (map js/parseInt (rest (clojure.string/split id-of-new #"-"))))
-        [sheet-num section-num item-num] split-id
+  (let [[sheet-num section-num item-num] (util/split-id id-of-new)
         sheet (get sheets sheet-num)
         section (get (:items sheet) section-num)
         item (get (:items section) item-num)
@@ -26,13 +25,6 @@
     (do
       ;(println id-of-new)
       ;(println "indexes" [sheet-num section-num item-num])
-      ;(println "sheets" sheets)
-      ;(println "sheet" sheet)
-      ;(println "sheet-num" sheet-num)
-      ;(println "get sheet" (get sheets sheet-num))
-      ;(println "section" section)
-      ;(println "item" item)
-      ;(println "current workbench" @current-workbench)
       (swap!
         current-workbench
         #(as-> % X
@@ -49,49 +41,40 @@
           (do (println "Current workbench" X) X)
           (assoc-in X [sheet-num :items section-num :items item-num] item)
           ))
-    ;(cond
-    ;  ; Doesn't contain sheet
-    ;  (not (contains? @current-workbench sheet-num)) (as-> item X
-    ;                                                   (assoc-in
-    ;                                                     sheet
-    ;                                                     [:items section-num :items]
-    ;                                                     [X])
-    ;                                                   (do (println "old sheet" sheet) X)
-    ;                                                   (do (println "New sheet" X) X)
-    ;                                                   (do (println "foo" (get-in sheet [:items section-num :items])) X)
-    ;                                                   (fn [] (assoc @current-workbench sheet-num X))
-    ;                                                   (swap! current-workbench X)
-    ;                                                   )
-    ;  ; Doesn't contain section
-    ;  (nil? (get-in @current-workbench [sheet-num :items section-num])) (as-> item X
-    ;                                                   (assoc-in
-    ;                                                     section
-    ;                                                     [:items item-num]
-    ;                                                     X)
-    ;                                                   (fn [] (assoc-in @current-workbench [sheet-num :items] [X]))
-    ;                                                   (swap! current-workbench X)
-    ;                                                   )
-    ;  ; Doesn't contain item
-    ;  :else (as-> item X
-    ;          (fn [] (assoc-in @current-workbench [sheet-num :items section-num :items item-num] X))
-    ;          (swap! current-workbench X)
-    ;          )
-    ;  )
     )
   ))
 
+(defn remove-from-workbench [current-workbench removed-id]
+  (let [[sheet-num section-num item-num] (util/split-id removed-id)
+        ]
+  (swap!
+    current-workbench
+    #(as-> % X
+       (util/dissoc-in X [sheet-num :items section-num :items item-num])
+       (if
+         (empty? (get-in X [sheet-num :items section-num :items]))
+         (util/dissoc-in X [sheet-num :items section-num])
+         X)
+       (if
+         (empty? (get-in X [sheet-num :items]))
+         (dissoc X sheet-num)
+         X)
+      )
+   )
+  ))
+
 (defn workbench-sidebar [current-workbench display-workbench?]
-  (let [item-display (fn [{:keys [id content]}] [:span [:button "-"] [:a {:href (util/id-to-url id)} (subs content 0 15)]])
+  (let [item-display (fn [{:keys [id content]}] [:span [:button {:on-click #(remove-from-workbench current-workbench id)} "-"] [:a {:href (util/id-to-url id)} (subs content 0 15)]])
         section-display (fn [{:keys [id title items]}] (into [:div [:h3 [:a {:href (util/id-to-url id)} title]]] (util/map-component item-display (vals items))))
         sheet-display (fn [{:keys [id title items]}] (into [:div [:h2 title]] (util/map-component section-display (vals items))))
         ]
     (do
-      (println "sidebar workbench" (map identity (get current-workbench 0)))
+      (println "sidebar workbench" (map identity (get @current-workbench 0)))
   [:section {:id "workbench"}
    [:h1 "Workbench"]
    [:input {:type "checkbox" :name "workbench-toggle" :checked @display-workbench? :onChange #(swap! display-workbench? (fn [display?] (not display?)))}]
    [:label {:for "workbench-toggle"} "Display only workbench"]
-   (into [:ul] (util/map-component sheet-display (vals current-workbench)))
+   (into [:ul] (util/map-component sheet-display (vals @current-workbench)))
    ]
   )))
 
@@ -100,7 +83,7 @@
   (let [current-workbench (r/atom {})
         add-to-this-workbench (partial add-to-workbench current-workbench)
         ]
-    [(fn [] (workbench-sidebar @current-workbench display-workbench)),
+    [(fn [] (workbench-sidebar current-workbench display-workbench)),
      [#(workbench-display add-to-this-workbench @current-workbench)]
      add-to-this-workbench
      ]))
