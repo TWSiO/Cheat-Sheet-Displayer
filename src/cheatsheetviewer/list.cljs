@@ -93,19 +93,23 @@
   )
 
 (defn sheet-section [sheets add-to-workbench {:keys [id, title, items]}]
+  (let [vec-items (if (map? items) (vals items) items)
+        ]
   ^{:key id} [:section {:id id, :class "section"}
    [:h2 [:a {:href (util/id-to-url id)} title]]
    ;(map-component item-elem items)
-   (map (fn [item] ^{:key (:id item)} [item-elem sheets add-to-workbench item]) items)
+   (map (fn [item] ^{:key (:id item)} [item-elem sheets add-to-workbench item]) vec-items)
    ]
-  )
+  ))
 
 (defn sheet-display [sheets add-to-workbench {id :id, title :title, items :items} sheet]
+  (let [vec-items (if (map? items) (vals items) items)
+        ]
   (do
     ;(println "title" title)
   [:div {:id id, :class "sheet-display"}
    [:h1 title]
    ;(map-component sheet-section items)
-   (map (fn [item] ^{:key (:id item)} [sheet-section sheets add-to-workbench item]) items)
+   (map (fn [item] ^{:key (:id item)} [sheet-section sheets add-to-workbench item]) vec-items)
    ]
-  ))
+  )))

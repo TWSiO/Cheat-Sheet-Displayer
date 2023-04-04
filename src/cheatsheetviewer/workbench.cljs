@@ -33,46 +33,67 @@
       ;(println "section" section)
       ;(println "item" item)
       ;(println "current workbench" @current-workbench)
-    (cond
-      ; Doesn't contain sheet
-      (not (contains? @current-workbench sheet-num)) (as-> item X
-                                                       (assoc-in
-                                                         sheet
-                                                         [:items section-num :items item-num]
-                                                         X)
-                                                       (fn [] (assoc @current-workbench sheet-num X))
-                                                       (swap! current-workbench X)
-                                                       )
-      ; Doesn't contain section
-      (nil? (get-in @current-workbench [sheet-num :items section-num])) (as-> item X
-                                                       (assoc-in
-                                                         section
-                                                         [:items item-num]
-                                                         X)
-                                                       (fn [] (assoc-in @current-workbench [sheet-num :items section-num] X))
-                                                       (swap! current-workbench X)
-                                                       )
-      ; Doesn't contain item
-      :else (as-> item X
-              (fn [] (assoc-in @current-workbench [sheet-num :items section-num :items item-num] X))
-              (swap! current-workbench X)
-              )
-      )
+      (swap!
+        current-workbench
+        #(as-> % X
+          (if
+            (not (contains? X sheet-num))
+            (assoc X sheet-num (assoc sheet :items {}))
+            X)
+          (do (println "Current workbench" X) X)
+          (do (println "get" (get-in X [sheet-num :items section-num])) X)
+          (if
+            (nil? (get-in X [sheet-num :items section-num]))
+            (assoc-in X [sheet-num :items section-num] (assoc section :items {}))
+            X)
+          (do (println "Current workbench" X) X)
+          (assoc-in X [sheet-num :items section-num :items item-num] item)
+          ))
+    ;(cond
+    ;  ; Doesn't contain sheet
+    ;  (not (contains? @current-workbench sheet-num)) (as-> item X
+    ;                                                   (assoc-in
+    ;                                                     sheet
+    ;                                                     [:items section-num :items]
+    ;                                                     [X])
+    ;                                                   (do (println "old sheet" sheet) X)
+    ;                                                   (do (println "New sheet" X) X)
+    ;                                                   (do (println "foo" (get-in sheet [:items section-num :items])) X)
+    ;                                                   (fn [] (assoc @current-workbench sheet-num X))
+    ;                                                   (swap! current-workbench X)
+    ;                                                   )
+    ;  ; Doesn't contain section
+    ;  (nil? (get-in @current-workbench [sheet-num :items section-num])) (as-> item X
+    ;                                                   (assoc-in
+    ;                                                     section
+    ;                                                     [:items item-num]
+    ;                                                     X)
+    ;                                                   (fn [] (assoc-in @current-workbench [sheet-num :items] [X]))
+    ;                                                   (swap! current-workbench X)
+    ;                                                   )
+    ;  ; Doesn't contain item
+    ;  :else (as-> item X
+    ;          (fn [] (assoc-in @current-workbench [sheet-num :items section-num :items item-num] X))
+    ;          (swap! current-workbench X)
+    ;          )
+    ;  )
     )
   ))
 
 (defn workbench-sidebar [current-workbench display-workbench?]
-  (let [item-display (fn [{:keys [id content]}] [:a {:href (util/id-to-url id)} (subs content 0 15)]) ;TODO cut off content
-        section-display (fn [{:keys [id title items]}] (into [:div [:h3 [:a {:href (util/id-to-url id)} title]]] (util/map-component item-display items)))
-        sheet-display (fn [{:keys [id title items]}] (into [:div [:h2 title]] (util/map-component section-display items)))
+  (let [item-display (fn [{:keys [id content]}] [:span [:button "-"] [:a {:href (util/id-to-url id)} (subs content 0 15)]])
+        section-display (fn [{:keys [id title items]}] (into [:div [:h3 [:a {:href (util/id-to-url id)} title]]] (util/map-component item-display (vals items))))
+        sheet-display (fn [{:keys [id title items]}] (into [:div [:h2 title]] (util/map-component section-display (vals items))))
         ]
+    (do
+      (println "sidebar workbench" (map identity (get current-workbench 0)))
   [:section {:id "workbench"}
    [:h1 "Workbench"]
    [:input {:type "checkbox" :name "workbench-toggle" :checked @display-workbench? :onChange #(swap! display-workbench? (fn [display?] (not display?)))}]
    [:label {:for "workbench-toggle"} "Display only workbench"]
    (into [:ul] (util/map-component sheet-display (vals current-workbench)))
    ]
-  ))
+  )))
 
 ; Could I have made `current-workbench` global if I had returned a function here? Tested it out and the answer is yes.
 (defn workbench-component-and-setter [display-workbench]
