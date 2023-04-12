@@ -51,17 +51,17 @@
              }
             {:title "Log Buffer"
              :items [{:content "Log buffer related stuff starts with `l`"}
-                     {:content "s (<ll>ls): Open horizontal log buffer"}
-                     {:content "v (<ll>lv): Open vertical log buffer"}
-                     {:content "q (<ll>lq): Close log buffers*"}
+                     {:content "s (&lt;ll&gt;ls): Open horizontal log buffer"}
+                     {:content "v (&lt;ll&gt;lv): Open vertical log buffer"}
+                     {:content "q (&lt;ll&gt;lq): Close log buffers*"}
                      ]
              }
             {:title "Evaluation"
              :items [{:content "Evaluation stuff starts with `e`"}
-                     {:content "b (<ll>eb): Evaluates entire buffer (current \"file\"). Useful for evaluating all definitions."}
-                     {:content "e (<ll>ee): Evaluates form (inside parens) that your cursor is on.*"}
-                     {:content "r (<ll>er): Evaluates outer form that your cursor is on. Basically the outer most parens that isn't within a parens.*"}
-                     {:content "w (<ll>ew): Shows the contents of a variable. More useful in scripting."}
+                     {:content "b (&lt;ll&gt;eb): Evaluates entire buffer (current \"file\"). Useful for evaluating all definitions."}
+                     {:content "e (&lt;ll&gt;ee): Evaluates form (inside parens) that your cursor is on.*"}
+                     {:content "r (&lt;ll&gt;er): Evaluates outer form that your cursor is on. Basically the outer most parens that isn't within a parens.*"}
+                     {:content "w (&lt;ll&gt;ew): Shows the contents of a variable. More useful in scripting."}
                      ]
              }
             {:title "Tips"
@@ -90,7 +90,6 @@
                                   ))
         ]
     (do
-      ;(println "id items" items)
     (vec (map-indexed assign-id items))
     )))
 
@@ -139,13 +138,17 @@
   (let [current (r/atom (first sheets))
         set-current (fn [sheet] (reset! current sheet))
         display-workbench (r/atom false)
-        [workbench-sidebar, workbench-display, add-to-workbench] (wb/workbench-component-and-setter display-workbench)
+        [workbench-sidebar, workbench-display, add-to-workbench, get-workbench-element, remove-from-workbench] (wb/workbench-component-and-setter display-workbench)
         ]
     (fn []
       (do
         [:div {:id "everything"}
          [lister/left-sidebar set-current @current sheets]
-         [:main (if @display-workbench workbench-display [lister/sheet-display sheets add-to-workbench @current])]
+         [:main
+          (if @display-workbench
+            [workbench-display]
+            [lister/sheet-display sheets add-to-workbench get-workbench-element remove-from-workbench @current])]
+
          [workbench-sidebar]
          ]
         ))))

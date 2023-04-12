@@ -23,8 +23,6 @@
         item (get (:items section) item-num)
         ]
     (do
-      ;(println id-of-new)
-      ;(println "indexes" [sheet-num section-num item-num])
       (swap!
         current-workbench
         #(as-> % X
@@ -32,13 +30,10 @@
             (not (contains? X sheet-num))
             (assoc X sheet-num (assoc sheet :items {}))
             X)
-          (do (println "Current workbench" X) X)
-          (do (println "get" (get-in X [sheet-num :items section-num])) X)
           (if
             (nil? (get-in X [sheet-num :items section-num]))
             (assoc-in X [sheet-num :items section-num] (assoc section :items {}))
             X)
-          (do (println "Current workbench" X) X)
           (assoc-in X [sheet-num :items section-num :items item-num] item)
           ))
     )
@@ -63,20 +58,40 @@
    )
   ))
 
-(defn workbench-sidebar [current-workbench display-workbench?]
-  (let [item-display (fn [{:keys [id content]}] [:span [:button {:on-click #(remove-from-workbench current-workbench id)} "-"] [:a {:href (util/id-to-url id)} (subs content 0 15)]])
-        section-display (fn [{:keys [id title items]}] (into [:div [:h3 [:a {:href (util/id-to-url id)} title]]] (util/map-component item-display (vals items))))
-        sheet-display (fn [{:keys [id title items]}] (into [:div [:h2 title]] (util/map-component section-display (vals items))))
+(defn get-workbench-element [workbench id]
+  (let [[sheet-num section-num item-num] (util/split-id id)
         ]
     (do
-      (println "sidebar workbench" (map identity (get @current-workbench 0)))
-  [:section {:id "workbench"}
-   [:h1 "Workbench"]
-   [:input {:type "checkbox" :name "workbench-toggle" :checked @display-workbench? :onChange #(swap! display-workbench? (fn [display?] (not display?)))}]
-   [:label {:for "workbench-toggle"} "Display only workbench"]
-   (into [:ul] (util/map-component sheet-display (vals @current-workbench)))
-   ]
-  )))
+    (get-in workbench [sheet-num :items section-num :items item-num]))))
+
+(defn workbench-sidebar [current-workbench display-workbench?]
+  (let [item-display (fn [{:keys [id content]}]
+                       [:div {:class "workbench-item"}
+                        [:button {:on-click #(remove-from-workbench current-workbench id)} "-"]
+                        [:a {:href (util/id-to-url id)} (subs content 0 15)]])
+
+        section-display (fn [{:keys [id title items]}]
+                          (into
+                            [:div [:h3 [:a {:href (util/id-to-url id)} title]]]
+                            (util/map-component item-display (vals items))))
+        sheet-display (fn [{:keys [id title items]}]
+                        (into
+                          [:div [:h2 title]]
+                          (util/map-component section-display (vals items))))
+        ]
+    (do
+      [:div {:id "right-area"}
+       [:section {:id "workbench"}
+        [:h1 "Workbench"]
+        [:input {:type "checkbox"
+                 :name "workbench-toggle"
+                 :checked @display-workbench?
+                 :onChange #(swap! display-workbench? (fn [display?] (not display?)))}]
+        [:label {:for "workbench-toggle"} "Display only workbench"]
+        (into [:div] (util/map-component sheet-display (vals @current-workbench)))
+        ]
+       ]
+      )))
 
 ; Could I have made `current-workbench` global if I had returned a function here? Tested it out and the answer is yes.
 (defn workbench-component-and-setter [display-workbench]
@@ -84,6 +99,8 @@
         add-to-this-workbench (partial add-to-workbench current-workbench)
         ]
     [(fn [] (workbench-sidebar current-workbench display-workbench)),
-     [#(workbench-display add-to-this-workbench @current-workbench)]
+     #(workbench-display add-to-this-workbench @current-workbench)
      add-to-this-workbench
+     #(get-workbench-element @current-workbench %)
+     #(remove-from-workbench current-workbench %)
      ]))
