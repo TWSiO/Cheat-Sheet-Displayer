@@ -10,14 +10,66 @@
       <h3>ClojureScript has not been compiled!</h3>
       <p>please run <b>npx shadow-cljs watch app</b> in order to start the compiler</p>
     </div>
-    <span id="test-sheet" data-sheet="
-  [{:content &quot;Foo&quot;
-    :children [{:content &quot;Bar&quot;}
-               {:content &quot;Baz&quot;}
-               ]
+    <span id="cheat-sheet-data" data-sheet="
+  [
+   {;:id &quot;item-0&quot;
+    :title &quot;Markdown&quot;
+    :items [{;:id &quot;item-0-0&quot;
+             :title &quot;link&quot;
+             :items [{;:id &quot;item-0-0-0&quot;
+                      :content &quot;Put them in the form of `[CONTENT](URL)`&quot;
+                      :examples [{:content &quot;[title](https://www.example.com)&quot;}]
+                      }
+                     ]
+             }
+            {;:id &quot;item-0-1&quot;
+             :title &quot;heading&quot;
+             :items [{;:id &quot;item-0-1-0&quot;
+                      :content &quot;To create a heading use #&quot;
+                      }
+                     ]
+             }
+            ]
     }
-   {:content &quot;Lorem&quot;}
-   {:content &quot Ipsum&quot;}
+   {;:id &quot;item-1&quot;
+    :title &quot;command line&quot;
+    :items [{;:id &quot;item-1-0&quot;
+             :title &quot;`find`&quot;
+             :items [{;:id &quot;item-1-0-0&quot;
+                      :content &quot;Manual: [https://www.gnu.org/software/findutils/manual/find.html](https://www.gnu.org/software/findutils/manual/find.html)&quot;
+                      }
+                     {;:id &quot;item-1-0-1&quot;
+                      :content &quot;```\nfind &lt;OPTIONS&gt; &lt;PATH&gt;\n```&quot;}
+                     {:content &quot;Options\n* -type\n* -name&quot;}
+                     ]
+             }
+            ]
+    }
+   {:title &quot;Conjure&quot;
+    :items [{:title &quot;Local Leader&quot;
+             :items [{:content &quot;All the commands are prefixed by the `&lt;localleader&gt;` (`&lt;ll&gt;`) key. By default that is `-`.&quot;}]
+             }
+            {:title &quot;Log Buffer&quot;
+             :items [{:content &quot;Log buffer related stuff starts with `l`&quot;}
+                     {:content &quot;s (&lt;ll&gt;ls): Open horizontal log buffer&quot;}
+                     {:content &quot;v (&lt;ll&gt;lv): Open vertical log buffer&quot;}
+                     {:content &quot;q (&lt;ll&gt;lq): Close log buffers*&quot;}
+                     ]
+             }
+            {:title &quot;Evaluation&quot;
+             :items [{:content &quot;Evaluation stuff starts with `e`&quot;}
+                     {:content &quot;b (&lt;ll&gt;eb): Evaluates entire buffer (current \&quot;file\&quot;). Useful for evaluating all definitions.&quot;}
+                     {:content &quot;e (&lt;ll&gt;ee): Evaluates form (inside parens) that your cursor is on.*&quot;}
+                     {:content &quot;r (&lt;ll&gt;er): Evaluates outer form that your cursor is on. Basically the outer most parens that isn't within a parens.*&quot;}
+                     {:content &quot;w (&lt;ll&gt;ew): Shows the contents of a variable. More useful in scripting.&quot;}
+                     ]
+             }
+            {:title &quot;Tips&quot;
+             :items [{:content &quot;To test out some things, you can type some code in temporarily and evaluate it with conjure.&quot;}
+                     ]
+             }
+            ]
+    }
    ]
         ">
     <script src="/js/app.js" type="text/javascript"></script>

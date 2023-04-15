@@ -4,16 +4,21 @@
       [reagent.dom :as d]
       [cheatsheetviewer.util :as util]
       [cheatsheetviewer.list :as lister]
+      [markdown.core :as md]
       ))
 
-(defn workbench-display [add-to-workbench workbench]
+(defn workbench-display [add-to-workbench get-workbench-element remove-from-workbench workbench]
   (let [
         ]
+    (do
+      ;(println "workbench" workbench)
     [:div {:id "workbench-display"}
      [:h1 "Workbench"]
-     (map (fn[item] ^{:key (:id item)} [lister/sheet-display workbench add-to-workbench item]) (vals workbench))
+     (map
+       (fn[item] ^{:key (:id item)} [lister/sheet-display workbench add-to-workbench get-workbench-element remove-from-workbench item])
+       (vals workbench))
      ]
-  ))
+  )))
 
 ; Would this be much easier if I just made it a generic "tree"? Would it have been worth the overhead?
 (defn add-to-workbench [current-workbench sheets id-of-new]
@@ -64,20 +69,27 @@
     (do
     (get-in workbench [sheet-num :items section-num :items item-num]))))
 
-(defn workbench-sidebar [current-workbench display-workbench?]
-  (let [item-display (fn [{:keys [id content]}]
+(defn workbench-sidebar [go-to-item current-workbench display-workbench?]
+  (let [item-display (fn [sheet {:keys [id content]}]
                        [:div {:class "workbench-item"}
                         [:button {:on-click #(remove-from-workbench current-workbench id)} "-"]
-                        [:a {:href (util/id-to-url id)} (subs content 0 15)]])
+                        [:a
+                         {:href (str "?sheet=" (:title sheet) (util/id-to-url id))
+                          :on-click #(do
+                                       (.preventDefault %)
+                                       (.stopPropagation %)
+                                       (println "Sheet and ID" sheet id)
+                                       (go-to-item sheet id))
+                          :dangerouslySetInnerHTML {:__html (md/md->html content)}}]])
 
-        section-display (fn [{:keys [id title items]}]
+        section-display (fn [sheet {:keys [id title items]}]
                           (into
-                            [:div [:h3 [:a {:href (util/id-to-url id)} title]]]
-                            (util/map-component item-display (vals items))))
-        sheet-display (fn [{:keys [id title items]}]
+                            [:div [:h3 [:a {:href (str "?sheet=" sheet (util/id-to-url id))} title]]]
+                            (util/map-component (partial item-display sheet) (vals items))))
+        sheet-display (fn [{:keys [id title items] :as sheet}]
                         (into
                           [:div [:h2 title]]
-                          (util/map-component section-display (vals items))))
+                          (util/map-component (partial section-display sheet) (vals items))))
         ]
     (do
       [:div {:id "right-area"}
@@ -94,12 +106,12 @@
       )))
 
 ; Could I have made `current-workbench` global if I had returned a function here? Tested it out and the answer is yes.
-(defn workbench-component-and-setter [display-workbench]
+(defn workbench-component-and-setter [go-to-item display-workbench]
   (let [current-workbench (r/atom {})
         add-to-this-workbench (partial add-to-workbench current-workbench)
         ]
-    [(fn [] (workbench-sidebar current-workbench display-workbench)),
-     #(workbench-display add-to-this-workbench @current-workbench)
+    [(fn [] (workbench-sidebar go-to-item current-workbench display-workbench)),
+     #(workbench-display add-to-this-workbench get-workbench-element remove-from-workbench @current-workbench)
      add-to-this-workbench
      #(get-workbench-element @current-workbench %)
      #(remove-from-workbench current-workbench %)

@@ -63,6 +63,7 @@
                            [:button {:on-click #(remove-from-workbench id)} "Remove from workbench"])
         ]
     (do
+      ;(println "Element" id content (md/md->html content))
     ^{:key id} [:section {:id id, :class "element"}
                 workbench-toggle
                 [:div {:dangerouslySetInnerHTML {:__html (md/md->html content)}}]
@@ -72,35 +73,24 @@
 
 (defn sheet-section [sheets add-to-workbench get-workbench-element remove-from-workbench {:keys [id, title, items]}]
   (let [vec-items (if (map? items) (vals items) items)
+        partial-component [item-elem sheets add-to-workbench get-workbench-element remove-from-workbench]
+        component-fn (fn [item] ^{:key (:id item)} (conj partial-component item))
         ]
-  ^{:key id} [:section {:id id, :class "section"}
-   [:h2 [:a {:href (util/id-to-url id)} title]]
-   ;(map-component item-elem items)
-   (map
-     (fn [item] ^{:key (:id item)} [item-elem
-                                    sheets
-                                    add-to-workbench
-                                    get-workbench-element
-                                    remove-from-workbench
-                                    item])
-     vec-items)
-   ]
-  ))
+    (into ^{:key id} [:section {:id id, :class "section"}
+                ^{:key "foo"} [:h2 [:a {:href (util/id-to-url id)} title]]
+                ]
+                (map component-fn vec-items))
+    ))
 
 ; Maybe should have composed componenets to reduce prop drilling.
 (defn sheet-display [sheets add-to-workbench get-workbench-element remove-from-workbench {id :id, title :title, items :items} sheet]
   (let [vec-items (if (map? items) (vals items) items)
+        partial-component [sheet-section sheets add-to-workbench get-workbench-element remove-from-workbench]
+        component-fn (fn [item] ^{:key (:id item)} (conj partial-component item))
         ]
     (do
       [:div {:id id, :class "sheet-display"}
        [:h1 title]
-       (map
-         (fn [item] ^{:key (:id item)} [sheet-section
-                                        sheets
-                                        add-to-workbench
-                                        get-workbench-element
-                                        remove-from-workbench
-                                        item])
-         vec-items)
+       (map component-fn vec-items)
        ]
       )))
