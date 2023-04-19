@@ -13,34 +13,141 @@
     <span id="cheat-sheet-data" data-sheet="
   [
    {;:id &quot;item-0&quot;
-    :title &quot;Markdown&quot;
-    :items [{;:id &quot;item-0-0&quot;
-             :title &quot;link&quot;
-             :items [{;:id &quot;item-0-0-0&quot;
-                      :content &quot;Put them in the form of `[CONTENT](URL)`&quot;
-                      :examples [{:content &quot;[title](https://www.example.com)&quot;}]
-                      }
+    :title &quot;command line&quot;
+    :description &quot;&quot;
+    :items [{:title &quot;File Compression with tar&quot;
+             :items [{:content &quot;Typically want to use `tar -xf $FILE`&quot;}
+                     {:content &quot;You can use `-v` with tar to print the file names as well.&quot;}
+                     {:content &quot;If you're not dealing with stdin, then it should auto-detect the compression type.&quot;}
                      ]
-             }
-            {;:id &quot;item-0-1&quot;
-             :title &quot;heading&quot;
-             :items [{;:id &quot;item-0-1-0&quot;
-                      :content &quot;To create a heading use #&quot;
-                      }
+             },
+            {;:id &quot;item-1-0&quot;
+             :title &quot;Finding files&quot;
+             :items [{;:id &quot;item-1-0-0&quot;
+                      :content &quot;To find from current directory:\n```\nlocate \&quot;$PWD*/&lt;FILE GLOB&gt;\&quot;\n```&quot;}
+                      {:content &quot;`find`'s manual: [https://www.gnu.org/software/findutils/manual/find.html](https://www.gnu.org/software/findutils/manual/find.html)&quot;}
+                     {;:id &quot;item-1-0-1&quot;
+                      :content &quot;```\nfind &lt;OPTIONS&gt; &lt;PATH&gt;\n```&quot;}
+                     {:content &quot;`find -type` specifies file type. Typically use \&quot;`f`\&quot;.&quot;}
+                     {:content &quot;`find -name`: Name of file to search for.&quot;}
+                     ]
+             },
+            {:title &quot;Shell/Bash Syntax&quot;
+             :items [{:content &quot;When reading variables, prefix with `$`&quot;}
+                     {:content &quot;When writing variables, don't prefix with `$`&quot;}
+                     {:content &quot;If conditional uses `elif`&quot;}
+                     ]
+             },
+            {:title &quot;diff&quot;
+             :items [{:content &quot;`diff` finds the difference between two files/directories.&quot;}
+                     {:content &quot;`-q`/`--brief`: Report only the files that differ.&quot;}
+                     {:content &quot;`-r`/`--recursive`: Recursively compare directories found.&quot;}
+                     ]
+             },
+            {:title &quot;Rsync&quot;
+             :items [{:content &quot;Ending directory name in `/` copies contents and without it copies the directory.&quot;}
+                     {:content &quot;`-v`: verbose&quot;}
+                     {:content &quot;`-a`: archive. A combination of a bunch of other useful options such as recursive.&quot;}
+                     {:content &quot;`-P`: Combination of --partial which allows resumption of interrupted sync, and --progress which shows progress.&quot;}
+                     {:content &quot;`-n`: Dry run&quot;}
+                     {:content &quot;`--delete`: Delete files from destination that aren't in source directory.&quot;}
+                     ]
+             },
+            {:title &quot;lsblk&quot;
+             :description &quot;Lists devices&quot;
+             :items [{:content &quot;Useful for finding USB drives, other external storage, etc.&quot;}
+                     {:content &quot;Listed devices are usually located in `/dev/`&quot;}
+                     ]
+             },
+            {:title &quot;udisk&quot;
+             :description &quot;Automatically mounts and unmounts a device&quot;
+             :items [{:content &quot;Device names can be found with lsblk&quot;}
+                     {:content &quot;Mounting: `udisksctl mount -b $DEVICE_NAME`&quot;}
+                     {:content &quot;Unmounting: `udisksctl unmount -b $DEVICE_NAME`&quot;}
                      ]
              }
             ]
     }
-   {;:id &quot;item-1&quot;
-    :title &quot;command line&quot;
-    :items [{;:id &quot;item-1-0&quot;
-             :title &quot;`find`&quot;
-             :items [{;:id &quot;item-1-0-0&quot;
-                      :content &quot;Manual: [https://www.gnu.org/software/findutils/manual/find.html](https://www.gnu.org/software/findutils/manual/find.html)&quot;
+   {:title &quot;Vim&quot;
+    :items [{:title &quot;Text Objects&quot;
+             :items [{:content &quot;Operator + Text Object/Motion&quot;}
+                     {:content &quot;A text object is `a` or `i` followed by a letter.&quot;}
+                     {:content &quot;`a`: \&quot;A _\&quot;. Includes relevant surrounding items.&quot;
+                      :examples [{:content &quot;`da[` deletes everything between square brackets as well as square brackets&quot;},
+                                 {:content &quot;`daw` deletes a word, as well as one of the spaces surrounding.&quot;}
+                                 ]}
+                     {:content &quot;`i`: \&quot;Inner _\&quot;. Just the inner content, excluding surrounding stuff.&quot;
+                      :examples [{:content &quot;`di[` deletes everything between the nearest square brackets but not the brackets themselves.&quot;}
+                                 {:content &quot;`diw` deletes the \&quot;inner\&quot; word which leaves the surrounding whitespace.&quot;}
+                                 ]
                       }
-                     {;:id &quot;item-1-0-1&quot;
-                      :content &quot;```\nfind &lt;OPTIONS&gt; &lt;PATH&gt;\n```&quot;}
-                     {:content &quot;Options\n* -type\n* -name&quot;}
+                     {:content &quot;`s`: Sentence&quot;}
+                     {:content &quot;`p`: Paragraph&quot;}
+                     {:content &quot;`[`/`]`: Text enclosed by square brackets.&quot;}
+                     {:content &quot;`(`/`)`: Text enclosed by parenthesis.&quot;}
+                     {:content &quot;`&lt;`/`&gt;`: Text enclosed by angle brackets.&quot;}
+                     {:content &quot;`{`/`}`: Text enclosed by curly braces.&quot;}
+                     {:content &quot;`\&quot;`/`'`/`\\``: Text enclosed by the various quotes.&quot;}
+                     {:content &quot;`t`: Text enclosed by matching HTML/XML tags.&quot;
+                      :examples [{:content &quot;`dit` between `&lt;p&gt;` tags would get rid of everything between them, while leaving the tags.&quot;}]
+                      }
+                     ]
+             },
+            {:title &quot;Multiple repeats&quot;
+             :items [{:content &quot;`:[range]g[lobal]/{pattern}/[cmd]`&quot;}
+                     ]
+             },
+            {:title &quot;Shell&quot;
+             :items [{:content &quot;`:r![shell]` outputs shell command to the buffer (usually current file).&quot;}
+                     ]
+             },
+            {:title &quot;Miscellaneous&quot;
+             :items [{:content &quot;`&lt;tab&gt;`/`CTRL-I`: Opposites of `CTRL-O`&quot;}
+                     {:content &quot;`[*`/`]*`: Go to the next start/end of a C style comment (`/*`/`*/`).&quot;}
+                     ]
+             }
+            ]
+    }
+   {:title &quot;Clojure&quot;
+    :items [{:title &quot;Other Resources&quot;
+             :items [{:content &quot;Official basics page: [https://clojure.org/guides/learn/clojure](https://clojure.org/guides/learn/clojure)&quot;}
+                     {:content &quot;Clojuredocs: [https://clojuredocs.org/](https://clojuredocs.org/)&quot;}
+                     {:content &quot;Clojuredocs quick reference: [https://clojuredocs.org/quickref](https://clojuredocs.org/quickref)&quot;}
+                     {:content &quot;Destructuring: [https://clojure.org/guides/destructuring](https://clojure.org/guides/destructuring)&quot;}
+                     {:content &quot;A clojurescript resource: [https://www.learn-clojurescript.com/](https://www.learn-clojurescript.com/)&quot;}
+                     {:content &quot;Babashka: [https://book.babashka.org/](https://book.babashka.org/)&quot;}
+                     ]
+             },
+            {:title &quot;Common Higher Order Function Behavior&quot;
+             :description &quot;E.g. `map`, `filter`, `reduce`.&quot;
+             :items [{:content &quot;The functions are often the earlier parameters.&quot;}
+                     {:content &quot;`map`, `filter`, `reduce` are curried. E.g. `(map f)` returns back a function that maps `f`&quot;}
+                     {:content &quot;`map`, `filter`, `reduce` return lists, even if applied over vectors.&quot;}
+                     ]
+             },
+            {:title &quot;`get`&quot;
+             :items [{:content &quot;Used for both vectors and maps, but not lists.&quot;}
+                     {:content &quot;Value, then key/index&quot;
+                      :examples [{:content &quot;`(get collection idx-or-key)`&quot;}]
+                      }
+                     ]
+             },
+            {:title &quot;`assoc`&quot;
+             :items [{:content &quot;`(assoc map key val)`&quot;}
+                     ]
+             },
+            {:title &quot;Common Mistakes&quot;
+             :items [{:content &quot;`#([...])` does not work and throws an error. `#(identity [...])`, `(fn [...] [...])`, `#(vec ...)`.&quot;}
+                     ]
+             },
+            {:title &quot;Clojurescript&quot;
+             :items [{:content &quot;Use the `js` namespace to get things from javascript.&quot;
+                      :examples [{:content &quot;`(.getElementById js/document \&quot;app\&quot;)`&quot;}]
+                      }
+                     ]
+             },
+            {:title &quot;Reagent&quot;
+             :items [{:content &quot;`:&lt;&gt;` is React fragment (which groups components without enclosing it in an actual element).&quot;}
                      ]
              }
             ]

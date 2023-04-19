@@ -13,33 +13,12 @@
     (.getElementById js/document X)
     (.-dataset X)
     (.-sheet X)
+    (clojure.edn/read-string X)
   ))
 
-(println "Data" data)
-
-; Don't really need tags. Not sure when anything from clojure would cross over to scala for example and be relevent.
-(def test-data
+(def test-data-old
   [
    {;:id "item-0"
-    :title "Markdown"
-    :items [{;:id "item-0-0"
-             :title "link"
-             :items [{;:id "item-0-0-0"
-                      :content "Put them in the form of `[CONTENT](URL)`"
-                      :examples [{:content "[title](https://www.example.com)"}]
-                      }
-                     ]
-             }
-            {;:id "item-0-1"
-             :title "heading"
-             :items [{;:id "item-0-1-0"
-                      :content "To create a heading use #"
-                      }
-                     ]
-             }
-            ]
-    }
-   {;:id "item-1"
     :title "command line"
     :description ""
     :items [{:title "File Compression with tar"
@@ -95,6 +74,90 @@
              }
             ]
     }
+   {:title "Vim"
+    :items [{:title "Text Objects"
+             :items [{:content "Operator + Text Object/Motion"}
+                     {:content "A text object is `a` or `i` followed by a letter."}
+                     {:content "`a`: \"A _\". Includes relevant surrounding items."
+                      :examples [{:content "`da[` deletes everything between square brackets as well as square brackets"},
+                                 {:content "`daw` deletes a word, as well as one of the spaces surrounding."}
+                                 ]}
+                     {:content "`i`: \"Inner _\". Just the inner content, excluding surrounding stuff."
+                      :examples [{:content "`di[` deletes everything between the nearest square brackets but not the brackets themselves."}
+                                 {:content "`diw` deletes the \"inner\" word which leaves the surrounding whitespace."}
+                                 ]
+                      }
+                     {:content "`s`: Sentence"}
+                     {:content "`p`: Paragraph"}
+                     {:content "`[`/`]`: Text enclosed by square brackets."}
+                     {:content "`(`/`)`: Text enclosed by parenthesis."}
+                     {:content "`<`/`>`: Text enclosed by angle brackets."}
+                     {:content "`{`/`}`: Text enclosed by curly braces."}
+                     {:content "`\"`/`'`/`\\``: Text enclosed by the various quotes."}
+                     {:content "`t`: Text enclosed by matching HTML/XML tags."
+                      :examples [{:content "`dit` between `<p>` tags would get rid of everything between them, while leaving the tags."}]
+                      }
+                     ]
+             },
+            {:title "Multiple repeats"
+             :items [{:content "`:[range]g[lobal]/{pattern}/[cmd]`"}
+                     ]
+             },
+            {:title "Shell"
+             :items [{:content "`:r![shell]` outputs shell command to the buffer (usually current file)."}
+                     ]
+             },
+            {:title "Miscellaneous"
+             :items [{:content "`<tab>`/`CTRL-I`: Opposites of `CTRL-O`"}
+                     {:content "`[*`/`]*`: Go to the next start/end of a C style comment (`/*`/`*/`)."}
+                     ]
+             }
+            ]
+    }
+   {:title "Clojure"
+    :items [{:title "Other Resources"
+             :items [{:content "Official basics page: [https://clojure.org/guides/learn/clojure](https://clojure.org/guides/learn/clojure)"}
+                     {:content "Clojuredocs: [https://clojuredocs.org/](https://clojuredocs.org/)"}
+                     {:content "Clojuredocs quick reference: [https://clojuredocs.org/quickref](https://clojuredocs.org/quickref)"}
+                     {:content "Destructuring: [https://clojure.org/guides/destructuring](https://clojure.org/guides/destructuring)"}
+                     {:content "A clojurescript resource: [https://www.learn-clojurescript.com/](https://www.learn-clojurescript.com/)"}
+                     {:content "Babashka: [https://book.babashka.org/](https://book.babashka.org/)"}
+                     ]
+             },
+            {:title "Common Higher Order Function Behavior"
+             :description "E.g. `map`, `filter`, `reduce`."
+             :items [{:content "The functions are often the earlier parameters."}
+                     {:content "`map`, `filter`, `reduce` are curried. E.g. `(map f)` returns back a function that maps `f`"}
+                     {:content "`map`, `filter`, `reduce` return lists, even if applied over vectors."}
+                     ]
+             },
+            {:title "`get`"
+             :items [{:content "Used for both vectors and maps, but not lists."}
+                     {:content "Value, then key/index"
+                      :examples [{:content "`(get collection idx-or-key)`"}]
+                      }
+                     ]
+             },
+            {:title "`assoc`"
+             :items [{:content "`(assoc map key val)`"}
+                     ]
+             },
+            {:title "Common Mistakes"
+             :items [{:content "`#([...])` does not work and throws an error. `#(identity [...])`, `(fn [...] [...])`, `#(vec ...)`."}
+                     ]
+             },
+            {:title "Clojurescript"
+             :items [{:content "Use the `js` namespace to get things from javascript."
+                      :examples [{:content "`(.getElementById js/document \"app\")`"}]
+                      }
+                     ]
+             },
+            {:title "Reagent"
+             :items [{:content "`:<>` is React fragment (which groups components without enclosing it in an actual element)."}
+                     ]
+             }
+            ]
+    }
    {:title "Conjure"
     :items [{:title "Local Leader"
              :items [{:content "All the commands are prefixed by the `<localleader>` (`<ll>`) key. By default that is `-`."}]
@@ -137,9 +200,7 @@
     )))
 
 
-(def test-data-id (add-ids test-data nil))
-
-;(println "test-data-id" test-data-id)
+(def data-id (add-ids data nil))
 
 (defn get-sheets []
   (let [sheet-elem (.getElementById js/document "test-sheet")
@@ -180,7 +241,7 @@
                        (swap! controlled-url (partial set-url sheet item-id))
                        (if (= (:id @current) (:id sheet)) (set! (.-location js/window) (.toString @controlled-url)))
                        ; TODO Doesn't align with how I'm doing stuff elsewhere.
-                       (reset! current (util/search-list #(= (:id sheet) (:id %)) test-data-id))))
+                       (reset! current (util/search-list #(= (:id sheet) (:id %)) data-id))))
 
         set-current (fn [sheet] (go-to-item sheet nil))
 
@@ -206,7 +267,7 @@
 ;; Views
 
 (defn home-page []
-   [everything test-data-id]
+   [everything data-id]
    )
 
 ;; -------------------------

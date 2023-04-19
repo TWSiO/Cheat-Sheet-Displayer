@@ -21,7 +21,7 @@
   [:details
    [:summary "Examples"]
    [:ul
-     (map-indexed (fn [i example] ^{:key i} [:li {:class "example", :dangerouslySetInnerHTML {:__html (:content example)}}]) examples)
+     (map-indexed (fn [i example] ^{:key i} [:li {:class "example", :dangerouslySetInnerHTML {:__html (md/md->html (:content example))}}]) examples)
    ]
    ]
   ))

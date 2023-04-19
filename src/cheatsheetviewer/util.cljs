@@ -1,13 +1,13 @@
 (ns cheatsheetviewer.util
-    ;(:require
-      ;)
-    )
+  ;(:require
+  ;)
+  )
 
 (defn id-to-url [id]
   (if (nil? id)
     ""
-  (str "#" id)
-  ))
+    (str "#" id)
+    ))
 
 ; Not at all efficient, but not important at the moment.
 (defn search-list [pred item-list]
@@ -48,14 +48,4 @@
     {}
     ""
     (str "/?sheet=" (:title sheet))
-  ))
-
-;(defn set-url-item [sheet-title id]
-;  (do
-;  (.pushState
-;    js/history
-;    {}
-;    ""
-;    (str "/?sheet=" sheet-title (id-to-url id))
-;    (this-as this (.forceUpdate this))
-;  )))
+    ))
