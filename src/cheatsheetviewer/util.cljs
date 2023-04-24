@@ -34,13 +34,17 @@
   (update-in assoc-val (butlast path) dissoc (last path))
   )
 
-(defn get-url-sheet []
-  (as-> (.-href (.-location js/document)) X
-    (js/URL. X)
+;(defn get-url-sheet []
+;  (as-> (.-href (.-location js/document)) X
+;    (js/URL. X)
+;    (.-searchParams X)
+;    (.get X "sheet")
+;    )
+;  )
+(defn get-url-sheet [url-obj]
+  (as-> url-obj X
     (.-searchParams X)
-    (.get X "sheet")
-    )
-  )
+    (.get X "sheet")))
 
 (defn set-url-sheet [sheet]
   (.pushState

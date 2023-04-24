@@ -10,15 +10,13 @@
 (defn workbench-display [add-to-workbench get-workbench-element remove-from-workbench workbench]
   (let [
         ]
-    (do
-      ;(println "workbench" workbench)
     [:div {:id "workbench-display"}
      [:h1 "Workbench"]
      (map
        (fn[item] ^{:key (:id item)} [lister/sheet-display workbench add-to-workbench get-workbench-element remove-from-workbench item])
        (vals workbench))
      ]
-  )))
+  ))
 
 ; Would this be much easier if I just made it a generic "tree"? Would it have been worth the overhead?
 (defn add-to-workbench [current-workbench sheets id-of-new]
@@ -27,22 +25,21 @@
         section (get (:items sheet) section-num)
         item (get (:items section) item-num)
         ]
-    (do
-      (swap!
-        current-workbench
-        #(as-> % X
-          (if
-            (not (contains? X sheet-num))
-            (assoc X sheet-num (assoc sheet :items {}))
-            X)
-          (if
-            (nil? (get-in X [sheet-num :items section-num]))
-            (assoc-in X [sheet-num :items section-num] (assoc section :items {}))
-            X)
-          (assoc-in X [sheet-num :items section-num :items item-num] item)
-          ))
+    (swap!
+      current-workbench
+      #(as-> % X
+         (if
+           (not (contains? X sheet-num))
+           (assoc X sheet-num (assoc sheet :items {}))
+           X)
+         (if
+           (nil? (get-in X [sheet-num :items section-num]))
+           (assoc-in X [sheet-num :items section-num] (assoc section :items {}))
+           X)
+         (assoc-in X [sheet-num :items section-num :items item-num] item)
+         ))
     )
-  ))
+  )
 
 (defn remove-from-workbench [current-workbench removed-id]
   (let [[sheet-num section-num item-num] (util/split-id removed-id)
@@ -66,32 +63,35 @@
 (defn get-workbench-element [workbench id]
   (let [[sheet-num section-num item-num] (util/split-id id)
         ]
-    (do
-    (get-in workbench [sheet-num :items section-num :items item-num]))))
+    (get-in workbench [sheet-num :items section-num :items item-num])))
 
 (defn workbench-sidebar [go-to-item current-workbench display-workbench?]
-  (let [item-display (fn [sheet {:keys [id content]}]
+  (let [item-on-click #(fn [sheet id event]
+                         (.preventDefault event)
+                         (.stopPropagation event)
+                         (go-to-item sheet id))
+
+        item-display (fn [sheet {:keys [id content]}]
                        [:div {:class "workbench-item"}
                         [:button {:on-click #(remove-from-workbench current-workbench id)} "-"]
-                        [:a
-                         {:href (str "?sheet=" (:title sheet) (util/id-to-url id))
-                          :on-click #(do
-                                       (.preventDefault %)
-                                       (.stopPropagation %)
-                                       (println "Sheet and ID" sheet id)
-                                       (go-to-item sheet id))
+                        [:a {:href (str "?sheet=" (:title sheet) (util/id-to-url id))
+                          :on-click (partial item-on-click sheet id)
                           :dangerouslySetInnerHTML {:__html (md/md->html content)}}]])
 
         section-display (fn [sheet {:keys [id title items]}]
                           (into
-                            [:div [:h3 [:a {:href (str "?sheet=" sheet (util/id-to-url id))} title]]]
+                            [:div
+                             [:h3
+                              [:a {:href (str "?sheet=" (:title sheet) (util/id-to-url id)) :on-click (partial item-on-click sheet id)}
+                               title]]]
                             (util/map-component (partial item-display sheet) (vals items))))
+
         sheet-display (fn [{:keys [id title items] :as sheet}]
                         (into
                           [:div [:h2 title]]
                           (util/map-component (partial section-display sheet) (vals items))))
         ]
-    (do
+
       [:div {:id "right-area"}
        [:section {:id "workbench"}
         [:h1 "Workbench"]
@@ -103,9 +103,9 @@
         (into [:div] (util/map-component sheet-display (vals @current-workbench)))
         ]
        ]
-      )))
+      ))
 
-; Could I have made `current-workbench` global if I had returned a function here? Tested it out and the answer is yes.
+; Kind of a weird way to keep `current-workbench` atom local. It's a little janky, seems like there should be a better way, and might not be worth it, but it's currently working.
 (defn workbench-component-and-setter [go-to-item display-workbench]
   (let [current-workbench (r/atom {})
         add-to-this-workbench (partial add-to-workbench current-workbench)

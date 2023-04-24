@@ -3,7 +3,7 @@
     --secondary-background: lightgray;
     --left-area-color: transparent;
     --right-area-color: transparent;
-    --primary-color: #3AC8E4;
+    --primary-color: #3E69EB;
 
     /*
     --primary-background: #fbf3e8;
@@ -147,8 +147,8 @@ main h2 a {
 }
 
 .element button:hover {
-    background-color: gray;
-    color: white;
+    background-color: #D4DFFF;
+    color: black;
 }
 
 #sheet-selection-control {
@@ -159,13 +159,13 @@ main h2 a {
     text-align: center;
 }
 
-.sheet-display > h1 {
+main h1 {
     text-align: center;
 }
 
 code {
     white-space: nowrap;
-    background-color: #CCE9EE;
+    background-color: #D4DFFF;
     /*
     background-color: #ffdeb5;
     */
@@ -173,4 +173,12 @@ code {
 
 select {
     background-color: var(--secondary-background)
+}
+
+#help-link {
+    float: right;
+}
+
+div.help > p {
+    margin: 1rem 0rem;
 }
