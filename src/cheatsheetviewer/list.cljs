@@ -63,16 +63,18 @@
                 ]
     ))
 
-(defn sheet-section [sheets add-to-workbench get-workbench-element remove-from-workbench {:keys [id, title, items]}]
+(defn sheet-section [sheets add-to-workbench get-workbench-element remove-from-workbench {:keys [id, title, items, description]}]
   (let [vec-items (if (map? items) (vals items) items)
         partial-component [item-elem sheets add-to-workbench get-workbench-element remove-from-workbench]
         component-fn (fn [item] ^{:key (:id item)} (conj partial-component item))
+        description-section (if (nil? description) "" [:p description])
         ]
 
     (into ^{:key id} [:section {:id id, :class "section"}
-                ^{:key "foo"} [:h2 [:a {:href (util/id-to-url id)} title]]
-                ]
-                (map component-fn vec-items))
+                      [:h2 [:a {:href (util/id-to-url id)} title]]
+                      description-section
+                      ]
+          (map component-fn vec-items))
     ))
 
 ; Maybe should have composed componenets to reduce prop drilling.
@@ -81,16 +83,18 @@
                      add-to-workbench
                      get-workbench-element
                      remove-from-workbench
-                     {id :id, title :title, items :items} sheet
+                     {:keys [id, title, items, description]} sheet
                      ]
   (let [vec-items (if (map? items) (vals items) items)
         partial-component [sheet-section sheets add-to-workbench get-workbench-element remove-from-workbench]
         component-fn (fn [item] ^{:key (:id item)} (conj partial-component item))
+        description-section (if (nil? description) "" [:p description])
         ]
 
     [:div {:id id, :class "sheet-display"}
      [:a {:id "help-link" :on-click #(set-help true) :href "#"} "help"]
      [:h1 title]
+     description-section
      (map component-fn vec-items)
      ]
     ))

@@ -13,8 +13,8 @@
     <span id="cheat-sheet-data" data-sheet="
   [
    {;:id &quot;item-0&quot;
-    :title &quot;command line&quot;
-    :description &quot;&quot;
+    :title &quot;Command Line&quot;
+    :description &quot;Information about various linux command line commands and tools.&quot;
     :items [{:title &quot;File Compression with tar&quot;
              :items [{:content &quot;Typically want to use `tar -xf $FILE`&quot;}
                      {:content &quot;You can use `-v` with tar to print the file names as well.&quot;}
@@ -45,7 +45,7 @@
                      ]
              },
             {:title &quot;Rsync&quot;
-             :items [{:content &quot;Ending directory name in `/` copies contents and without it copies the directory.&quot;}
+             :items [{:content &quot;Ending directory name with `/` copies contents and without it copies the directory.&quot;}
                      {:content &quot;`-v`: verbose&quot;}
                      {:content &quot;`-a`: archive. A combination of a bunch of other useful options such as recursive.&quot;}
                      {:content &quot;`-P`: Combination of --partial which allows resumption of interrupted sync, and --progress which shows progress.&quot;}
@@ -60,7 +60,7 @@
                      ]
              },
             {:title &quot;udisk&quot;
-             :description &quot;Automatically mounts and unmounts a device&quot;
+             :description &quot;A tool for automatically mounting and unmounting a device&quot;
              :items [{:content &quot;Device names can be found with lsblk&quot;}
                      {:content &quot;Mounting: `udisksctl mount -b $DEVICE_NAME`&quot;}
                      {:content &quot;Unmounting: `udisksctl unmount -b $DEVICE_NAME`&quot;}
@@ -69,36 +69,50 @@
             ]
     }
    {:title &quot;Vim&quot;
+    :description &quot;Various bits of useful info about the vim text editor.&quot;
     :items [{:title &quot;Text Objects&quot;
-             :items [{:content &quot;Operator + Text Object/Motion&quot;}
-                     {:content &quot;A text object is `a` or `i` followed by a letter.&quot;}
-                     {:content &quot;`a`: \&quot;A _\&quot;. Includes relevant surrounding items.&quot;
+             :description &quot;Ways of identifying a section of text that are more sophisticated than just movements.&quot;
+             :items [{:content &quot;Operator + Text Object/Motion&quot;
+                      :examples [
+                      {:content &quot;In the command to delete a word, `dw`, `d` is the delete operator, and `w` is the word motion.&quot;}
+                      {:content &quot;In the command to delete a word, `daw`, `d` is the delete operator, and `aw` is the word text object (different than motion).&quot;}
+                      ]
+                     }
+                     {:content &quot;A text object is `a` or `i` followed by another character specifying the text object.&quot;}
+                     {:content &quot;`a`: Includes relevant surrounding items. Mneumonic: \&quot;A _\&quot;. &quot;
                       :examples [{:content &quot;`da[` deletes everything between square brackets as well as square brackets&quot;},
                                  {:content &quot;`daw` deletes a word, as well as one of the spaces surrounding.&quot;}
                                  ]}
-                     {:content &quot;`i`: \&quot;Inner _\&quot;. Just the inner content, excluding surrounding stuff.&quot;
+                     {:content &quot;`i`: Just the inner content, excluding surrounding stuff. Mneumonic: \&quot;Inner _\&quot;.&quot;
                       :examples [{:content &quot;`di[` deletes everything between the nearest square brackets but not the brackets themselves.&quot;}
                                  {:content &quot;`diw` deletes the \&quot;inner\&quot; word which leaves the surrounding whitespace.&quot;}
                                  ]
                       }
+                     {:content &quot;`w`: Word&quot;}
                      {:content &quot;`s`: Sentence&quot;}
                      {:content &quot;`p`: Paragraph&quot;}
                      {:content &quot;`[`/`]`: Text enclosed by square brackets.&quot;}
                      {:content &quot;`(`/`)`: Text enclosed by parenthesis.&quot;}
                      {:content &quot;`&lt;`/`&gt;`: Text enclosed by angle brackets.&quot;}
                      {:content &quot;`{`/`}`: Text enclosed by curly braces.&quot;}
-                     {:content &quot;`\&quot;`/`'`/`\\``: Text enclosed by the various quotes.&quot;}
+                     {:content &quot;`\&quot;`/`'`/`&#8216;`: Text enclosed by the various quotes.&quot;}
                      {:content &quot;`t`: Text enclosed by matching HTML/XML tags.&quot;
                       :examples [{:content &quot;`dit` between `&lt;p&gt;` tags would get rid of everything between them, while leaving the tags.&quot;}]
                       }
                      ]
              },
             {:title &quot;Multiple repeats&quot;
+             :description &quot;Execute a command multiple times on multiple lines&quot;
              :items [{:content &quot;`:[range]g[lobal]/{pattern}/[cmd]`&quot;}
+                     {:content &quot;Can sometimes use a macro instead, or use a macro with this command.&quot;
+                      :examples [{:content &quot;`:g/pattern/norm! @q`&quot;}]
+                     }
                      ]
              },
             {:title &quot;Shell&quot;
-             :items [{:content &quot;`:r![shell]` outputs shell command to the buffer (usually current file).&quot;}
+             :items [{:content &quot;`:r![shell]` outputs shell command to the buffer (usually current file).&quot;
+                         :examples [{:content &quot;`:r!date` puts the current date in the current buffer/file.&quot;}]
+                     }
                      ]
              },
             {:title &quot;Miscellaneous&quot;
@@ -109,6 +123,7 @@
             ]
     }
    {:title &quot;Clojure&quot;
+    :description &quot;A cheat sheet for the Clojure programming language&quot;
     :items [{:title &quot;Other Resources&quot;
              :items [{:content &quot;Official basics page: [https://clojure.org/guides/learn/clojure](https://clojure.org/guides/learn/clojure)&quot;}
                      {:content &quot;Clojuredocs: [https://clojuredocs.org/](https://clojuredocs.org/)&quot;}
@@ -120,8 +135,8 @@
              },
             {:title &quot;Common Higher Order Function Behavior&quot;
              :description &quot;E.g. `map`, `filter`, `reduce`.&quot;
-             :items [{:content &quot;The functions are often the earlier parameters.&quot;}
-                     {:content &quot;`map`, `filter`, `reduce` are curried. E.g. `(map f)` returns back a function that maps `f`&quot;}
+             :items [{:content &quot;The input functions are usually the left-most parameters.&quot;}
+                     {:content &quot;`map`, `filter`, `reduce` are curried. E.g. `(map str)` returns back a function that maps `str`&quot;}
                      {:content &quot;`map`, `filter`, `reduce` return lists, even if applied over vectors.&quot;}
                      ]
              },
@@ -137,7 +152,7 @@
                      ]
              },
             {:title &quot;Common Mistakes&quot;
-             :items [{:content &quot;`#([...])` does not work and throws an error. `#(identity [...])`, `(fn [...] [...])`, `#(vec ...)`.&quot;}
+             :items [{:content &quot;`#([...])` does not work and throws an error. Use `#(identity [...])`, `(fn [...] [...])`, or `#(vec ...)`.&quot;}
                      ]
              },
             {:title &quot;Clojurescript&quot;
@@ -153,26 +168,27 @@
             ]
     }
    {:title &quot;Conjure&quot;
+    :description &quot;A cheat sheet for the Conjure NeoVim plugin. A useful tool for working with various Lisp dialects.&quot;
     :items [{:title &quot;Local Leader&quot;
              :items [{:content &quot;All the commands are prefixed by the `&lt;localleader&gt;` (`&lt;ll&gt;`) key. By default that is `-`.&quot;}]
              }
             {:title &quot;Log Buffer&quot;
-             :items [{:content &quot;Log buffer related stuff starts with `l`&quot;}
-                     {:content &quot;s (&lt;ll&gt;ls): Open horizontal log buffer&quot;}
-                     {:content &quot;v (&lt;ll&gt;lv): Open vertical log buffer&quot;}
-                     {:content &quot;q (&lt;ll&gt;lq): Close log buffers*&quot;}
+             :items [{:content &quot;Log buffer related commands start with `l`.&quot;}
+                     {:content &quot;`s` (`&lt;ll&gt;ls`): Open horizontal log buffer.&quot;}
+                     {:content &quot;`v` (`&lt;ll&gt;lv`): Open vertical log buffer.&quot;}
+                     {:content &quot;`q` (`&lt;ll&gt;lq`): Close log buffers.&quot;}
                      ]
              }
             {:title &quot;Evaluation&quot;
-             :items [{:content &quot;Evaluation stuff starts with `e`&quot;}
-                     {:content &quot;b (&lt;ll&gt;eb): Evaluates entire buffer (current \&quot;file\&quot;). Useful for evaluating all definitions.&quot;}
-                     {:content &quot;e (&lt;ll&gt;ee): Evaluates form (inside parens) that your cursor is on.*&quot;}
-                     {:content &quot;r (&lt;ll&gt;er): Evaluates outer form that your cursor is on. Basically the outer most parens that isn't within a parens.*&quot;}
-                     {:content &quot;w (&lt;ll&gt;ew): Shows the contents of a variable. More useful in scripting.&quot;}
+             :items [{:content &quot;Evaluation commands start with `e`.&quot;}
+                     {:content &quot;`b` (`&lt;ll&gt;eb`): Evaluates entire buffer (current \&quot;file\&quot;). Useful for making sure all definitions are available in Conjure evaluations.&quot;}
+                     {:content &quot;`e` (`&lt;ll&gt;ee`): Evaluates form (inside parens) that your cursor is on.&quot;}
+                     {:content &quot;`r` (`&lt;ll&gt;er`): Evaluates outer form that your cursor is on. Basically the outer most parens that isn't within a parens.&quot;}
+                     {:content &quot;`w` (`&lt;ll&gt;ew`): Shows the contents of a variable. More useful in scripts than larger code.&quot;}
                      ]
              }
             {:title &quot;Tips&quot;
-             :items [{:content &quot;To test out some things, you can type some code in temporarily and evaluate it with conjure.&quot;}
+             :items [{:content &quot;To test out some things, you can type some code in temporarily and evaluate it with Conjure.&quot;}
                      ]
              }
             ]

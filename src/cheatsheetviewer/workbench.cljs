@@ -7,13 +7,19 @@
       [markdown.core :as md]
       ))
 
-(defn workbench-display [add-to-workbench get-workbench-element remove-from-workbench workbench]
+(defn workbench-display [add-to-workbench get-workbench-element remove-from-workbench workbench set-help]
   (let [
         ]
     [:div {:id "workbench-display"}
      [:h1 "Workbench"]
      (map
-       (fn[item] ^{:key (:id item)} [lister/sheet-display workbench add-to-workbench get-workbench-element remove-from-workbench item])
+       (fn [item] ^{:key (:id item)} [lister/sheet-display
+                                      workbench
+                                      set-help
+                                      add-to-workbench
+                                      get-workbench-element
+                                      remove-from-workbench
+                                      item])
        (vals workbench))
      ]
   ))
@@ -73,10 +79,11 @@
 
         item-display (fn [sheet {:keys [id content]}]
                        [:div {:class "workbench-item"}
-                        [:button {:on-click #(remove-from-workbench current-workbench id)} "-"]
                         [:a {:href (str "?sheet=" (:title sheet) (util/id-to-url id))
                           :on-click (partial item-on-click sheet id)
-                          :dangerouslySetInnerHTML {:__html (md/md->html content)}}]])
+                          :dangerouslySetInnerHTML {:__html (md/md->html content)}}]
+                        [:button {:on-click #(remove-from-workbench current-workbench id)} "Remove"]
+                        ])
 
         section-display (fn [sheet {:keys [id title items]}]
                           (into
@@ -88,7 +95,7 @@
 
         sheet-display (fn [{:keys [id title items] :as sheet}]
                         (into
-                          [:div [:h2 title]]
+                          [:div {:class "workbench-sheet"} [:h2 title]]
                           (util/map-component (partial section-display sheet) (vals items))))
         ]
 
@@ -100,7 +107,7 @@
                  :checked @display-workbench?
                  :onChange #(swap! display-workbench? (fn [display?] (not display?)))}]
         [:label {:for "workbench-toggle"} "Display only workbench"]
-        (into [:div] (util/map-component sheet-display (vals @current-workbench)))
+        (into [:div {:id "workbench-sheets"}] (util/map-component sheet-display (vals @current-workbench)))
         ]
        ]
       ))
@@ -111,7 +118,7 @@
         add-to-this-workbench (partial add-to-workbench current-workbench)
         ]
     [(fn [] (workbench-sidebar go-to-item current-workbench display-workbench)),
-     #(workbench-display add-to-this-workbench get-workbench-element remove-from-workbench @current-workbench)
+     #(workbench-display add-to-this-workbench get-workbench-element remove-from-workbench @current-workbench %)
      add-to-this-workbench
      #(get-workbench-element @current-workbench %)
      #(remove-from-workbench current-workbench %)

@@ -114,12 +114,14 @@
                    )
         ]
     (fn []
+      (println "help state" @help-state)
+      (println "display workbench" @display-workbench)
       [:div {:id "everything"}
        [lister/left-sidebar set-current @current-sheet sheets]
        [:main
         (cond
           @help-state [help-display set-help]
-          @display-workbench [workbench-display]
+          @display-workbench [workbench-display set-help]
           :else [lister/sheet-display
                  sheets
                  set-help
