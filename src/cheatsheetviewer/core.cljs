@@ -6,15 +6,9 @@
       [cheatsheetviewer.list :as lister]
       [cheatsheetviewer.workbench :as wb]
       [cheatsheetviewer.util :as util]
+      [cljs-http.client :as http]
+      [cljs.core.async :refer [<! go]]
       ))
-
-(def data
-  (as-> "cheat-sheet-data" X
-    (.getElementById js/document X)
-    (.-dataset X)
-    (.-sheet X)
-    (clojure.edn/read-string X)
-  ))
 
 ; It's based on initial load of data, so won't be good across loads.
 (defn add-ids [items parent-partial-id]
@@ -29,7 +23,7 @@
     ))
 
 
-(def data-id (add-ids data nil))
+;(def data-id (add-ids data nil))
 
 (defn get-sheets []
   (let [sheet-elem (.getElementById js/document "test-sheet")
@@ -76,8 +70,11 @@
    [:p "In the right sidebar is the workbench. This allows you to collect items that are currently useful to what you are currently working on so you don't have to keep navigating back and forth between frequently used items for some task. You can add items to the workbench using the \"Add to workbench\" button on each item. Then you can either select the link in the workbench sidebar to navigate to it, or you can select the \"Display only workbench\" checkbox to display all of the items in your workbench in the main view area."]
    ])
 
+;; -------------------------
+;; Views
+
 ; I really want to clean this up, but also want to keep the atoms local (although I guess it doesn't really matter too much).
-(defn everything [sheets]
+(defn cheat-sheet-page [sheets]
   (let [url-sheet (util/get-url-sheet @controlled-url)
         current-sheet (r/atom
                         (if (nil? url-sheet)
@@ -98,7 +95,7 @@
                        current-sheet
                        (util/search-list
                          #(= (:id sheet) (:id %))
-                         data-id)))
+                         sheets)))
 
         set-current (fn [sheet] (go-to-item sheet nil))
 
@@ -114,8 +111,6 @@
                    )
         ]
     (fn []
-      (println "help state" @help-state)
-      (println "display workbench" @display-workbench)
       [:div {:id "everything"}
        [lister/left-sidebar set-current @current-sheet sheets]
        [:main
@@ -136,17 +131,23 @@
       )))
 
 ;; -------------------------
-;; Views
-
-(defn cheat-sheet-page []
-   [everything data-id]
-   )
-
-;; -------------------------
 ;; Initialize app
 
+(def data-url
+  (as-> "cheat-sheet-info" X
+    (.getElementById js/document X)
+    (.-dataset X)
+    (.-url X)
+  ))
+
+; Should probably have a more graceful waiting and error message for response, but I'm not going to worry about that for the MVP.
 (defn mount-root []
-  (d/render [cheat-sheet-page] (.getElementById js/document "app")))
+  (go
+    (let [response (<! (http/get data-url))
+          data (add-ids (clojure.edn/read-string (:body response)) nil)
+          ]
+      (d/render [cheat-sheet-page data] (.getElementById js/document "app"))
+      )))
 
 (defn ^:export init! []
   (mount-root))

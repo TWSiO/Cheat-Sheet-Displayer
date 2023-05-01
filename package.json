@@ -1,7 +1,8 @@
 {
   "scripts": {
     "start": "shadow-cljs watch app",
-    "repl": "npx shadow-cljs browser-repl"
+    "repl": "npx shadow-cljs browser-repl",
+    "release": "shadow-cljs release app"
   },
   "devDependencies": {
     "shadow-cljs": "^2.19.2"
