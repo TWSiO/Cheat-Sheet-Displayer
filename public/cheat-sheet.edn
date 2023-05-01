@@ -1,0 +1,180 @@
+[
+{:title "Command Line"
+    :description "Information about various linux command line commands and tools."
+        :items [{:title "File Compression with tar"
+            :items [{:content "Typically want to use `tar -xf $FILE`"}
+            {:content "You can use `-v` with tar to print the file names as well."}
+            {:content "If you're not dealing with stdin, then it should auto-detect the compression type."}
+            ]
+        },
+    {:title "Finding files"
+            :items [{
+                :content "To find from current directory:\n```\nlocate \"$PWD*/<FILE GLOB>\"\n```"}
+        {:content "`find`'s manual: [https://www.gnu.org/software/findutils/manual/find.html](https://www.gnu.org/software/findutils/manual/find.html)"}
+        {:content "```\nfind <OPTIONS> <PATH>\n```"}
+        {:content "`find -type` specifies file type. Typically use \"`f`\"."}
+        {:content "`find -name`: Name of file to search for."}
+            ]
+    },
+    {:title "Shell/Bash Syntax"
+        :items [{:content "When reading variables, prefix with `$`"}
+        {:content "When writing variables, don't prefix with `$`"}
+        {:content "If conditional uses `elif`"}
+        ]
+    },
+    {:title "diff"
+        :items [{:content "`diff` finds the difference between two files/directories."}
+        {:content "`-q`/`--brief`: Report only the files that differ."}
+        {:content "`-r`/`--recursive`: Recursively compare directories found."}
+        ]
+    },
+    {:title "Rsync"
+        :items [{:content "Ending directory name with `/` copies contents and without it copies the directory."}
+        {:content "`-v`: verbose"}
+        {:content "`-a`: archive. A combination of a bunch of other useful options such as recursive."}
+        {:content "`-P`: Combination of --partial which allows resumption of interrupted sync, and --progress which shows progress."}
+        {:content "`-n`: Dry run"}
+        {:content "`--delete`: Delete files from destination that aren't in source directory."}
+        ]
+    },
+    {:title "lsblk"
+        :description "Lists devices"
+            :items [{:content "Useful for finding USB drives, other external storage, etc."}
+        {:content "Listed devices are usually located in `/dev/`"}
+            ]
+    },
+    {:title "udisk"
+        :description "A tool for automatically mounting and unmounting a device"
+            :items [{:content "Device names can be found with lsblk"}
+        {:content "Mounting: `udisksctl mount -b $DEVICE_NAME`"}
+        {:content "Unmounting: `udisksctl unmount -b $DEVICE_NAME`"}
+            ]
+    }
+    ]
+}
+{:title "Vim"
+    :description "Various bits of useful info about the vim text editor."
+        :items [{:title "Text Objects"
+            :description "Ways of identifying a section of text that are more sophisticated than just movements."
+                :items [{:content "Operator + Text Object/Motion"
+                    :examples [
+                    {:content "In the command to delete a word, `dw`, `d` is the delete operator, and `w` is the word motion."}
+                    {:content "In the command to delete a word, `daw`, `d` is the delete operator, and `aw` is the word text object (different than motion)."}
+                    ]
+                }
+            {:content "A text object is `a` or `i` followed by another character specifying the text object."}
+            {:content "`a`: Includes relevant surrounding items. Mneumonic: \"A _\". "
+                :examples [{:content "`da[` deletes everything between square brackets as well as square brackets"},
+                    {:content "`daw` deletes a word, as well as one of the spaces surrounding."}
+                ]}
+            {:content "`i`: Just the inner content, excluding surrounding stuff. Mneumonic: \"Inner _\"."
+                :examples [{:content "`di[` deletes everything between the nearest square brackets but not the brackets themselves."}
+                {:content "`diw` deletes the \"inner\" word which leaves the surrounding whitespace."}
+                ]
+            }
+            {:content "`w`: Word"}
+            {:content "`s`: Sentence"}
+            {:content "`p`: Paragraph"}
+            {:content "`[`/`]`: Text enclosed by square brackets."}
+            {:content "`(`/`)`: Text enclosed by parenthesis."}
+            {:content "`<`/`>`: Text enclosed by angle brackets."}
+            {:content "`{`/`}`: Text enclosed by curly braces."}
+            {:content "`\"`/`'`/`&#8216;`: Text enclosed by the various quotes."}
+            {:content "`t`: Text enclosed by matching HTML/XML tags."
+                :examples [{:content "`dit` between `<p>` tags would get rid of everything between them, while leaving the tags."}]
+            }
+            ]
+        },
+    {:title "Multiple repeats"
+        :description "Execute a command multiple times on multiple lines"
+            :items [{:content "`:[range]g[lobal]/{pattern}/[cmd]`"}
+        {:content "Can sometimes use a macro instead, or use a macro with this command."
+            :examples [{:content "`:g/pattern/norm! @q`"}]
+        }
+            ]
+    },
+    {:title "Shell"
+        :items [{:content "`:r![shell]` outputs shell command to the buffer (usually current file)."
+            :examples [{:content "`:r!date` puts the current date in the current buffer/file."}]
+        }
+        ]
+    },
+    {:title "Miscellaneous"
+        :items [{:content "`<tab>`/`CTRL-I`: Opposites of `CTRL-O`"}
+        {:content "`[*`/`]*`: Go to the next start/end of a C style comment (`/*`/`*/`)."}
+        ]
+    }
+    ]
+}
+{:title "Clojure"
+    :description "A cheat sheet for the Clojure programming language"
+        :items [{:title "Other Resources"
+            :items [{:content "Official basics page: [https://clojure.org/guides/learn/clojure](https://clojure.org/guides/learn/clojure)"}
+            {:content "Clojuredocs: [https://clojuredocs.org/](https://clojuredocs.org/)"}
+            {:content "Clojuredocs quick reference: [https://clojuredocs.org/quickref](https://clojuredocs.org/quickref)"}
+            {:content "Destructuring: [https://clojure.org/guides/destructuring](https://clojure.org/guides/destructuring)"}
+            {:content "A clojurescript resource: [https://www.learn-clojurescript.com/](https://www.learn-clojurescript.com/)"}
+            {:content "Babashka: [https://book.babashka.org/](https://book.babashka.org/)"}
+            ]
+        },
+    {:title "Common Higher Order Function Behavior"
+        :description "E.g. `map`, `filter`, `reduce`."
+            :items [{:content "The input functions are usually the left-most parameters."}
+        {:content "`map`, `filter`, `reduce` are curried. E.g. `(map str)` returns back a function that maps `str`"}
+        {:content "`map`, `filter`, `reduce` return lists, even if applied over vectors."}
+            ]
+    },
+    {:title "`get`"
+        :items [{:content "Used for both vectors and maps, but not lists."}
+        {:content "Value, then key/index"
+            :examples [{:content "`(get collection idx-or-key)`"}]
+        }
+        ]
+    },
+    {:title "`assoc`"
+        :items [{:content "`(assoc map key val)`"}
+        ]
+    },
+    {:title "Common Mistakes"
+        :items [{:content "`#([...])` does not work and throws an error. Use `#(identity [...])`, `(fn [...] [...])`, or `#(vec ...)`."}
+        ]
+    },
+    {:title "Clojurescript"
+        :items [{:content "Use the `js` namespace to get things from javascript."
+            :examples [{:content "`(.getElementById js/document \"app\")`"}]
+        }
+        ]
+    },
+    {:title "Reagent"
+        :items [{:content "`:<>` is React fragment (which groups components without enclosing it in an actual element)."}
+        ]
+    }
+    ]
+}
+{:title "Conjure"
+    :description "A cheat sheet for the Conjure NeoVim plugin. A useful tool for working with various Lisp dialects."
+        :items [{:title "Local Leader"
+            :items [{:content "All the commands are prefixed by the `<localleader>` (`<ll>`) key. By default that is `-`."}]
+        }
+    {:title "Log Buffer"
+        :items [{:content "Log buffer related commands start with `l`."}
+        {:content "`s` (`<ll>ls`): Open horizontal log buffer."}
+        {:content "`v` (`<ll>lv`): Open vertical log buffer."}
+        {:content "`q` (`<ll>lq`): Close log buffers."}
+        ]
+    }
+    {:title "Evaluation"
+        :items [{:content "Evaluation commands start with `e`."}
+        {:content "`b` (`<ll>eb`): Evaluates entire buffer (current \"file\"). Useful for making sure all definitions are available in Conjure evaluations."}
+        {:content "`e` (`<ll>ee`): Evaluates form (inside parens) that your cursor is on."}
+        {:content "`r` (`<ll>er`): Evaluates outer form that your cursor is on. Basically the outer most parens that isn't within a parens."}
+        {:content "`w` (`<ll>ew`): Shows the contents of a variable. More useful in scripts than larger code."}
+        ]
+    }
+    {:title "Tips"
+        :items [{:content "To test out some things, you can type some code in temporarily and evaluate it with Conjure."}
+        ]
+    }
+    ]
+}
+]
