@@ -87,17 +87,21 @@
 
         go-to-item (fn [sheet item-id]
                      (swap! controlled-url (partial set-url sheet item-id))
-                     (if (= (:id @current-sheet) (:id sheet))
-                       (set!
-                         (.-location js/window)
-                         (.toString @controlled-url)))
+
+                     (cond
+                       (nil? item-id) (.scrollTo js/window 0 0)
+                       (= (:id @current-sheet) (:id sheet))
+                       (.scrollIntoView
+                         (.getElementById js/document item-id))
+                       )
 
                      ; TODO Doesn't align with how I'm doing stuff elsewhere.
                      (reset!
                        current-sheet
                        (util/search-list
                          #(= (:id sheet) (:id %))
-                         sheets)))
+                         sheets))
+                     )
 
         set-current (fn [sheet] (go-to-item sheet nil))
 
@@ -113,6 +117,14 @@
                    )
         ]
     (fn []
+      (r/after-render
+        #(if (not (= (.-hash @controlled-url) ""))
+           (as-> @controlled-url X
+             (.-hash X)
+             (subs X 1)
+             (.getElementById js/document X)
+             (.scrollIntoView X)
+             )))
       [:div {:id "everything"}
        [lister/left-sidebar set-current @current-sheet sheets]
        [:main
@@ -146,7 +158,7 @@
 (defn mount-root []
   (go
     (let [response (<! (http/get data-url))
-          data (add-ids (:body response) nil) ; Works if the response is edn.
+          data (add-ids (clojure.edn/read-string (:body response)) nil)
           ]
       (d/render [cheat-sheet-page data] (.getElementById js/document "app"))
       )))

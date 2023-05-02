@@ -72,16 +72,18 @@
     (get-in workbench [sheet-num :items section-num :items item-num])))
 
 (defn workbench-sidebar [go-to-item current-workbench display-workbench?]
-  (let [item-on-click #(fn [sheet id event]
-                         (.preventDefault event)
-                         (.stopPropagation event)
-                         (go-to-item sheet id))
+  (let [item-on-click (fn [sheet id event]
+                        (.preventDefault event)
+                        (.stopPropagation event)
+                        (go-to-item sheet id)
+                        )
 
         item-display (fn [sheet {:keys [id content]}]
                        [:div {:class "workbench-item"}
                         [:a {:href (str "?sheet=" (:title sheet) (util/id-to-url id))
                           :on-click (partial item-on-click sheet id)
-                          :dangerouslySetInnerHTML {:__html (md/md->html content)}}]
+                          :dangerouslySetInnerHTML {:__html (md/md->html content)}
+                          }]
                         [:button {:on-click #(remove-from-workbench current-workbench id)} "Remove"]
                         ])
 
