@@ -46,8 +46,9 @@
                         new-search-params
                         (util/id-to-url item-id)
                         ))
-        new-url-part (str "/?" new-search-params (util/id-to-url item-id))
+        new-url-part (str "?" new-search-params (util/id-to-url item-id))
         ]
+
       (.pushState js/history {} "" new-url-part)
       new-url-obj
     ))
@@ -68,6 +69,7 @@
    [:p "You can select which cheat sheet to view in the top left drop down menu."]
    [:p "In the left sidebar is a table of contents to quickly navigate the cheat sheet's sections."]
    [:p "In the right sidebar is the workbench. This allows you to collect items that are currently useful to what you are currently working on so you don't have to keep navigating back and forth between frequently used items for some task. You can add items to the workbench using the \"Add to workbench\" button on each item. Then you can either select the link in the workbench sidebar to navigate to it, or you can select the \"Display only workbench\" checkbox to display all of the items in your workbench in the main view area."]
+   [:p "It is not currently suited for use on mobile device screen sizes."]
    ])
 
 ;; -------------------------
@@ -144,7 +146,7 @@
 (defn mount-root []
   (go
     (let [response (<! (http/get data-url))
-          data (add-ids (clojure.edn/read-string (:body response)) nil)
+          data (add-ids (:body response) nil) ; Works if the response is edn.
           ]
       (d/render [cheat-sheet-page data] (.getElementById js/document "app"))
       )))
