@@ -4,6 +4,8 @@ Just a simple web app to view information from various cheat sheets. Built to ma
 
 Not intended or built to be super reusable, but you can try. Could be useful for inspiration on other Reagent projects as well.
 
+You can see it in action on my site [here](https://thiswebsiteis.online/cheat_sheet).
+
 ## Notes
 
 One warning is that you shouldn't use .edn files with the shadow-cljs test server. Write the edn text in a .txt file instead. The short version of the reason is that it's a problem because the shadow-cljs test server serves .edn files differently than most other http servers, and the code is written for use with other servers which causes a problem.
