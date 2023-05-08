@@ -40,6 +40,10 @@ a {
     text-decoration: underline;
 }
 
+ol {
+    list-style-type: decimal;
+}
+
 a:hover {
     text-decoration-color: white;
 }
