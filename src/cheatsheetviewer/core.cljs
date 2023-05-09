@@ -6,8 +6,6 @@
       [cheatsheetviewer.list :as lister]
       [cheatsheetviewer.workbench :as wb]
       [cheatsheetviewer.util :as util]
-      [cljs-http.client :as http]
-      [cljs.core.async :refer [<! go]]
       ))
 
 ; It's based on initial load of data, so won't be good across loads.
@@ -154,14 +152,19 @@
     (.-url X)
   ))
 
-; Should probably have a more graceful waiting and error message for response, but I'm not going to worry about that for the MVP.
+(def cheat-sheet-data
+  (as-> "cheat-sheet-json" X
+      (.getElementById js/document X)
+      (.-text X)
+      (.parse js/JSON X)
+      (js->clj X :keywordize-keys true)
+      (add-ids X)
+      ))
+
 (defn mount-root []
-  (go
-    (let [response (<! (http/get data-url))
-          data (add-ids (clojure.edn/read-string (:body response)) nil)
-          ]
-      (d/render [cheat-sheet-page data] (.getElementById js/document "app"))
-      )))
+  (d/render
+    [cheat-sheet-page cheat-sheet-data]
+    (.getElementById js/document "app")))
 
 (defn ^:export init! []
   (mount-root))
