@@ -1,4 +1,4 @@
-# Cheat Sheet Viewer
+# Cheat Sheet Displayer
 
 Just a simple web app to view information from various cheat sheets. Built to make quick referencing of information easy.
 
