@@ -158,7 +158,7 @@
       (.-text X)
       (.parse js/JSON X)
       (js->clj X :keywordize-keys true)
-      (add-ids X)
+      (add-ids X nil)
       ))
 
 (defn mount-root []
